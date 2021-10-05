@@ -1,8 +1,8 @@
 require "rack"
 require "json"
 require "sequel"
-DB = Sequel.sqlite "jobs.db"
 
+DB = Sequel.sqlite "jobs.db"
 handler = Rack::Handler::WEBrick
   
 class Base
