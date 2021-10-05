@@ -4,8 +4,6 @@ require "sequel"
 DB = Sequel.sqlite "jobs.db"
 
 handler = Rack::Handler::WEBrick
- 
-
   
 class Base
   class << self
@@ -32,10 +30,7 @@ class Base
     def content(content_type)
       arr = content_type.to_a.flatten
       headers = arr[1]
-
       headers["Content-Type"] = @mime[arr[0].to_sym]
-
-      puts headers
     end
 
     def GET(path, &block)
@@ -52,20 +47,15 @@ class MyApp < Base
 
   GET "/" do
     @records = DB[:jobs].all
-    print @records
     view "home"
   end
+ 
   GET "/new" do
-    #  print request.inspect
     view "form"
   end
 
   POST "/new" do |request, headers|
- 
     DB[:jobs].insert request.params
- 
-    print request.params.to_json
-
     headers["Location"] = "/"
   end
 
@@ -73,6 +63,7 @@ class MyApp < Base
     content "ico" => headers
     assets "favicon.ico"
   end
+ 
   GET "/spectre.css" do |request, headers|
     content "css" => headers
     assets "spectre.css"
@@ -80,7 +71,6 @@ class MyApp < Base
 
   GET "/api" do |request, headers|
     content "json" => headers
-
     #json  '{"status":0,"data":"some"}'
     json Hash[:bj => 100]
   end
@@ -95,24 +85,17 @@ class RackApp
     puts self.object_id
     path = env["PATH_INFO"] ||= "/"
     method = env["REQUEST_METHOD"]
-
- 
     cb = MyApp.route[method][path]
-
     headers = {
       "Content-Type" => "text/html",
     }
     if nil == cb
       [404, headers, ["NOT FOUND"]]
     else
- 
       resp = cb.call Rack::Request.new(env), headers
- 
-      puts headers
       if headers["Location"]
-        [302, headers, [""]]
+        [302, headers, ['']]
       else
- 
         [200, headers, [resp]]
       end
     end
